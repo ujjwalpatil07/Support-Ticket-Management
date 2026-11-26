@@ -1,0 +1,319 @@
+{
+  "info": {
+    "_postman_id": "a6f2e1d0-4f90-4c9a-9f1b-8c1e7b0d5501",
+    "name": "ResolveDesk — Support Ticket Management API",
+    "description": "Complete REST API collection for the Support Ticket Management System (v1). Uses HTTP-only JWT cookies and X-CSRF-Token protection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "csrfToken", "value": "" },
+    { "key": "ticketId", "value": "" },
+    { "key": "notificationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Get CSRF Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.csrfToken) { pm.collectionVariables.set('csrfToken', json.data.csrfToken); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/csrf-token"
+          }
+        },
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.csrfToken) { pm.collectionVariables.set('csrfToken', json.data.csrfToken); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Customer\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.csrfToken) { pm.collectionVariables.set('csrfToken', json.data.csrfToken); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.csrfToken) { pm.collectionVariables.set('csrfToken', json.data.csrfToken); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "X-CSRF-Token", "value": "{{csrfToken}}" }],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Create Ticket",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.ticket?._id) { pm.collectionVariables.set('ticketId', json.data.ticket._id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-CSRF-Token", "value": "{{csrfToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cannot upload invoice attachment\",\n  \"description\": \"Receiving a 500 response when submitting PDF invoice on billing settings.\",\n  \"category\": \"Payment Issue\",\n  \"priority\": \"High\"\n}"
+            },
+            "url": "{{baseUrl}}/tickets"
+          }
+        },
+        {
+          "name": "List Tickets",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tickets?page=1&limit=10&sortBy=createdAt&sortOrder=desc"
+          }
+        },
+        {
+          "name": "Get Ticket By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tickets/{{ticketId}}"
+          }
+        },
+        {
+          "name": "Update Ticket (Open Only for Users)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-CSRF-Token", "value": "{{csrfToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cannot upload PDF invoice attachment\",\n  \"category\": \"Payment Issue\"\n}"
+            },
+            "url": "{{baseUrl}}/tickets/{{ticketId}}"
+          }
+        },
+        {
+          "name": "Soft-Delete Ticket",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "X-CSRF-Token", "value": "{{csrfToken}}" }],
+            "url": "{{baseUrl}}/tickets/{{ticketId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments & Activities",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-CSRF-Token", "value": "{{csrfToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Attached correlation ID req_9481 for investigation.\"\n}"
+            },
+            "url": "{{baseUrl}}/tickets/{{ticketId}}/comments"
+          }
+        },
+        {
+          "name": "Get Ticket Comments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tickets/{{ticketId}}/comments"
+          }
+        },
+        {
+          "name": "Get Ticket Activities",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tickets/{{ticketId}}/activities"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Operations",
+      "item": [
+        {
+          "name": "Update Ticket Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-CSRF-Token", "value": "{{csrfToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/tickets/{{ticketId}}/status"
+          }
+        },
+        {
+          "name": "Update Ticket Priority",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-CSRF-Token", "value": "{{csrfToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"priority\": \"Critical\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/tickets/{{ticketId}}/priority"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications & Dashboard",
+      "item": [
+        {
+          "name": "List Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.notifications?.[0]?._id) { pm.collectionVariables.set('notificationId', json.data.notifications[0]._id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications?page=1&limit=20"
+          }
+        },
+        {
+          "name": "Get Unread Notification Count",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/unread-count"
+          }
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "X-CSRF-Token", "value": "{{csrfToken}}" }],
+            "url": "{{baseUrl}}/notifications/{{notificationId}}/read"
+          }
+        },
+        {
+          "name": "Mark All Notifications as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "X-CSRF-Token", "value": "{{csrfToken}}" }],
+            "url": "{{baseUrl}}/notifications/read-all"
+          }
+        },
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/dashboard/stats"
+          }
+        }
+      ]
+    }
+  ]
+}
