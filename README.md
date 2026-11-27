@@ -4,6 +4,36 @@ A full-stack, production-quality Mini Helpdesk & Support Ticket Management Syste
 
 ---
 
+## Live Demo
+
+**ResolveDesk – Support Ticket Management System**
+
+- **Live Application:** https://support-ticket-management-frontend-one.vercel.app
+- **Backend API:** https://support-ticket-management-5fzs.onrender.com
+- **GitHub Repository:** https://github.com/ujjwalpatil07/Support-Ticket-Management
+
+### Demo Access
+
+- **Customer/User:** Register directly through the application.
+## Demo Credentials
+
+The application supports two roles: Customer and Admin.
+
+### Customer Account
+- Register directly through the application.
+- Registration is open to everyone.
+- New registrations automatically receive the Customer role.
+
+### Admin Account
+
+Use the following credentials to explore the Admin Dashboard and administrative features.
+
+- **Login URL:** https://support-ticket-management-frontend-one.vercel.app/login
+- **Email:** `admin@helpdesk.local`
+- **Password:** `Admin@helpdesk.123`
+
+**Note:** Admin accounts are provisioned securely and cannot be created through public registration.
+
 ## Key Features
 
 - **Secure Authentication & RBAC**:
